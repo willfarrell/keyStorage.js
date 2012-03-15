@@ -45,15 +45,10 @@ var db = {
 };
 
 // custom sub db objects
-db.whois = keyDB(
-	"whois", {
+db.sample = keyDB(
+	"sample", {
 		"key":"",
-		"domain":"",
-		"sld":"",
-		"tld":"",
-		//"whois":"", 
-		//"state":"",
-		//"expires":"", // future
+		"value":"",
 		"timestamp":Date.now(),
 	});
 
