@@ -41,28 +41,28 @@ db.name = new keyDB(
 
 */
 
-// set globe storage bool
-// completely independent
-/*var storage = (function() {
-  var uid = new Date,
-      storage,
-      result;
-  try {
-    (storage = window.localStorage).setItem(uid, uid);
-    result = storage.getItem(uid) == uid;
-    storage.removeItem(uid);
-    return result && storage;
-  } catch( e ) {}
-}());*/
-
 // localStorage db wrapper
 var db = {
-	ls: localStorage, //localStorage short name
+	on: false,			// bool - if localStorage is enabled in browser
+	ls: localStorage, 	// localStorage short name - obfusification
+	
+	/**
+	 * set 'on' bool for those that want to 
+	 * test if localStorage is enabled
+     * @this {Object}
+     */
+	init: function() {
+		var uid = Date.now(),
+			result;
+		try {
+			result = this.get(uid, uid) == uid;
+			this.remove(uid);
+			this.on = result;
+		} catch( e ) {}
+	},
 	
 	// Main Functions //
 	
-	// obj is the default you would like a key to be if not already set
-	// implemented for cleaner init code - see example
 	/**
      * @this {Object}
      */
@@ -104,6 +104,8 @@ var db = {
 		this.ls.clear();	
 	}
 };
+
+db.init();
 
 // Keyed DB Class
 // keyDB("id", {})
