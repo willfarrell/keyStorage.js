@@ -173,6 +173,10 @@ keyDB.prototype.getAllObject = function() {
 	return list;
 };
 
+/**
+ * key = string key name
+ * list = {} - default container
+ */
 keyDB.prototype.setAllArray = function(key, list) {
 	if (!key) return;	// return if no key
 	this.clear();
@@ -183,6 +187,9 @@ keyDB.prototype.setAllArray = function(key, list) {
 	}
 };
 
+/**
+ * list = key:{} - default container
+ */
 keyDB.prototype.setAllObject = function(list) {
 	this.clear();
 	
@@ -191,7 +198,9 @@ keyDB.prototype.setAllObject = function(list) {
 	}
 };
 
-
+/**
+ * remove all keays from ls
+ */
 keyDB.prototype.clear = function() {
 	//this.ls.clear();
 	for (var i = 0, l = this.keys.length; i < l; i++) {
