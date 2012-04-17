@@ -1,6 +1,12 @@
 /*
 
-Examples:
+//== Important Notes ==//
+-JSON.parse() and JSON.stringify() are built-in
+-"keys" is a reserved key name for keyDB objects
+
+//== Examples ==//
+
+//= General Examples =//
 db.get('key');
 db.set('key', {});
 db.remove('key');
@@ -11,7 +17,10 @@ db.keyDB_name.set('key', {});
 db.keyDB_name.remove('key');
 db.keyDB_name.clear();
 
-init Examples:
+var list = db.keyDB_name.keys; 	// get list of keys
+var obj = db.keyDB_name.obj;	// get default obj
+
+//= init Examples =//
 var test = {}
 if (storage) {
 	test = db.get('test', test);
@@ -19,43 +28,22 @@ if (storage) {
 	alert('Your browser seems to be in Private Mode. Please disable it if you\'d like your settings saved for your next visit.');
 }
 
-Creating a keyDB:
-db.NAME = new keyDB(
-	"unique_name", 				// DB prefix for all keys
-	{							// default object (optinal)
+//= Creating a keyDB =//
+db.name = new keyDB(
+	"name", 				// DB prefix for all keys
+	{						// default object (optinal)
 		"key":"",
 		"value":"",
 		"timestamp":Date.now(),
 	}
 );
 
+
 */
 
-function cleanDB() {
-	// whois
-	var day = 86400000;
-	var now = Date.now();
-	
-	var min_age_taken = now - day*30; // state = 0 - free up space
-	var min_age_free =now -  day*1; // state = 1 - keep up accracy
-	
-	
-	var whois = db.whois.keys
-		obj;
-	for (var i = 0, l = whois.length; i < l; i++) {
-		obj = db.whois.get(whois[i], {});
-		if (obj.length && obj.timestamp && obj.state) { // valid obj
-			// remove all old cache
-			if ((obj.state === '0' && obj.timestamp < min_age_taken) ||
-				(obj.state === '1' && obj.timestamp < min_age_free)) {
-				db.whois.remove(whois[i]);
-			}
-		}
-	}
-}
-
 // set globe storage bool
-var storage = (function() {
+// completely independent
+/*var storage = (function() {
   var uid = new Date,
       storage,
       result;
@@ -64,8 +52,8 @@ var storage = (function() {
     result = storage.getItem(uid) == uid;
     storage.removeItem(uid);
     return result && storage;
-  } catch(e) {}
-}());
+  } catch( e ) {}
+}());*/
 
 // localStorage db wrapper
 var db = {
@@ -75,49 +63,68 @@ var db = {
 	
 	// obj is the default you would like a key to be if not already set
 	// implemented for cleaner init code - see example
-	get: function(key, obj) {
+	/**
+     * @this {Object}
+     */
+	get: function(key, default_obj) {
 		//log(obj);
-		if (!this.ls.getItem(key) && obj !== 'undefined') {
-			this.set(key, obj);
+		if ( default_obj !== 'undefined' && !this.ls.getItem(key)) {
+			this.set(key, default_obj);
 		}
 		//console.log(this.ls.getItem(key));
 		var result = this.ls.getItem(key);
-		if ( result === 'undefined' )
+		
+		if ( result === 'undefined' ) {
 			return result;
-		else
+		} else {
 			return JSON.parse(result);
+		}
 		// if (typeof(result) === Object)
 	},
 	
-	set: function(key, obj) {
-		this.ls.setItem(key, JSON.stringify(obj));
+	/**
+     * @this {Object}
+     */
+	set: function(key, default_obj) {
+		this.ls.setItem(key, JSON.stringify(default_obj));
 	},
 	
+	/**
+     * @this {Object}
+     */
 	remove: function(key) {
 		this.ls.removeItem(key);
 	},
 	
-	// clears ALL localStorage
+	// clears ALL localStorage - only call if you're sure
+	/**
+     * @this {Object}
+     */
 	clear: function() {
 		this.ls.clear();	
-	},
+	}
 };
 
 // Keyed DB Class
 // keyDB("id", {})
 // "keys" is a reserved keyname
-function keyDB(id, obj) {
+/**
+ * @this {Object}
+ */
+function keyDB(id, default_obj) {
 	this.id = id ? id+"_" : "_"; // prefix for all keys, end with _
 	this.keys = db.get(this.id+'keys', []);
-	this.obj = obj || {}; // default object being stored w/ required included
+	this.obj = default_obj || {}; // default object being stored
 }
 
-keyDB.prototype.get = function(key, obj) {
+
+keyDB.prototype.get = function(key, default_obj) {
 	//console.log("keyDB.get("+key+")");
-	return db.get(this.id+key, obj);
+	return db.get(this.id+key, default_obj);
 };
-	
+
 keyDB.prototype.set = function(key, obj) {
+	if (obj == 'undefined' || key == 'undefined') return;	// don't set undefined
 	//console.log("keyDB.set("+key+", ");
 	//console.log(obj);
 	//console.log(")");
@@ -125,12 +132,12 @@ keyDB.prototype.set = function(key, obj) {
 	// save key in keychain if not already there
 	//console.log(db.whois);
 	var index = this.keys.indexOf(key);
-	if (index === -1) { // if not in keys
+	if ( index === -1 ) { // if not in keys
 		this.keys.push(key);
 		db.set(this.id+'keys', this.keys);
 	}
 };
-	
+
 keyDB.prototype.remove = function(key) {
 	db.remove(this.id+key);
 	// remove key in keychain
@@ -140,6 +147,48 @@ keyDB.prototype.remove = function(key) {
 		db.set(this.id+'keys', this.keys);
 	}
 };
+
+/**
+ * list = [] - default container
+ */
+keyDB.prototype.getAllArray = function() {
+	var list = [];
+	for (var i = 0, l = this.keys.length; i < l; i++) {
+		list.push(db.get(this.id+this.keys[i]));
+	}
+	//if (!list.length) this.setAllArray(key, list_default);
+	return list;
+};
+
+/**
+ * list = {} - default container
+ */
+keyDB.prototype.getAllObject = function() {
+	var list = {};
+	for (var i = 0, l = this.keys.length; i < l; i++) {
+		list[this.keys[i]] = db.get(this.id+this.keys[i]);
+	}
+	return list;
+};
+
+keyDB.prototype.setAllArray = function(key, list) {
+	if (!key) return;	// return if no key
+	this.clear();
+	
+	for (var i = 0, l = list.length; i < l; i++) {
+		log(list[i]);
+		this.set(list[i][key], list[i]);
+	}
+};
+
+keyDB.prototype.setAllObject = function(list) {
+	this.clear();
+	
+	for (var i in list) {
+		this.set(i, list[i]);
+	}
+};
+
 
 keyDB.prototype.clear = function() {
 	//this.ls.clear();
