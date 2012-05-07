@@ -1,4 +1,7 @@
 /*
+//== To Do ==//
+-add update fucntions
+-merge [g|s]etAllArray and [g|s]etAllObject into one
 
 //== Important Notes ==//
 -JSON.parse() and JSON.stringify() are built-in
@@ -49,6 +52,9 @@ var db = {
 	/**
 	 * set 'on' bool for those that want to 
 	 * test if localStorage is enabled
+	 * 
+	 * call from below
+	 * 
      * @this {Object}
      */
 	init: function() {
@@ -79,7 +85,7 @@ var db = {
 		} else {
 			return JSON.parse(result);
 		}
-		// if (typeof(result) === Object)
+		// if (result === typeof Object)
 	},
 	
 	/**
@@ -153,29 +159,36 @@ keyDB.prototype.remove = function(key) {
 /**
  * list = [] - default container
  */
-keyDB.prototype.getAllArray = function() {
+keyDB.prototype.getAllArray = function(key, list_default) {
 	var list = [];
 	for (var i = 0, l = this.keys.length; i < l; i++) {
-		list.push(db.get(this.id+this.keys[i]));
+		list.push(this.get(this.keys[i]));
 	}
-	//if (!list.length) this.setAllArray(key, list_default);
+	if (!list.length && key && list_default) {
+		this.setAllArray(key, list_default);
+		list = list_default;
+	}
 	return list;
 };
 
 /**
  * list = {} - default container
  */
-keyDB.prototype.getAllObject = function() {
+keyDB.prototype.getAllObject = function(list_default) {
 	var list = {};
 	for (var i = 0, l = this.keys.length; i < l; i++) {
-		list[this.keys[i]] = db.get(this.id+this.keys[i]);
+		list[this.keys[i]] = this.get(this.keys[i]);
+	}
+	if (!list.length && list_default) {
+		this.setAllObject(list_default);
+		list = list_default;
 	}
 	return list;
 };
 
 /**
  * key = string key name
- * list = {} - default container
+ * list = [] - default container
  */
 keyDB.prototype.setAllArray = function(key, list) {
 	if (!key) return;	// return if no key
@@ -188,7 +201,7 @@ keyDB.prototype.setAllArray = function(key, list) {
 };
 
 /**
- * list = key:{} - default container
+ * list = key:{key:key, ...} - default container
  */
 keyDB.prototype.setAllObject = function(list) {
 	this.clear();
@@ -199,12 +212,12 @@ keyDB.prototype.setAllObject = function(list) {
 };
 
 /**
- * remove all keays from ls
+ * remove all keys from ls
  */
 keyDB.prototype.clear = function() {
 	//this.ls.clear();
 	for (var i = 0, l = this.keys.length; i < l; i++) {
-		db.remove(this.id+this.keys[i]);
+		this.remove(this.id+this.keys[i]);
 	}
-	db.remove(this.id+'keys');
+	//db.remove(this.id+'keys');
 };
