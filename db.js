@@ -32,12 +32,12 @@ if (storage) {
 }
 
 //= Creating a keyDB =//
-db.name = new keyDB(
+db.name = keyDB(
 	"name", 				// DB prefix for all keys
 	{						// default object (optinal)
 		"key":"",
 		"value":"",
-		"timestamp":Date.now(),
+		"timestamp":Date.now()
 	}
 );
 
@@ -179,7 +179,7 @@ keyDB.prototype.getAllObject = function(list_default) {
 	for (var i = 0, l = this.keys.length; i < l; i++) {
 		list[this.keys[i]] = this.get(this.keys[i]);
 	}
-	if (!list.length && list_default) {
+	if (objectIsEmpty(list) && list_default) {
 		this.setAllObject(list_default);
 		list = list_default;
 	}
@@ -221,3 +221,13 @@ keyDB.prototype.clear = function() {
 	}
 	//db.remove(this.id+'keys');
 };
+
+
+/**
+ *	
+ */
+function objectIsEmpty(obj) {
+    for (var i in obj) 
+		return true;
+	return false;
+}
