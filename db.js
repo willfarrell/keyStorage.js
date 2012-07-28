@@ -60,7 +60,7 @@ var db = {
      * @this {Object}
      */
 	init: function() {
-		var uid = Date.now(),
+		var uid = +new Date,
 			result;
 		try {
 			result = this.get(uid, uid) == uid;
