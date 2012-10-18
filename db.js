@@ -50,17 +50,17 @@ db.name = keyDB(
 var db = {
 	on: false,			// bool - if localStorage is enabled in browser
 	ls: localStorage, 	// localStorage short name - obfusification
-	
+
 	/**
-	 * set 'on' bool for those that want to 
+	 * set 'on' bool for those that want to
 	 * test if localStorage is enabled
-	 * 
+	 *
 	 * call from below
-	 * 
+	 *
      * @this {Object}
      */
 	init: function() {
-		var uid = +new Date,
+		var uid = +new Date(),
 			result;
 		try {
 			result = this.get(uid, uid) == uid;
@@ -68,9 +68,9 @@ var db = {
 			this.on = result;
 		} catch( e ) {}
 	},
-	
+
 	// Main Functions //
-	
+
 	/**
      * @this {Object}
      */
@@ -81,7 +81,7 @@ var db = {
 		}
 		//console.log(this.ls.getItem(key));
 		var result = this.ls.getItem(key);
-		
+
 		if ( result === 'undefined' ) {
 			return result;
 		} else {
@@ -89,28 +89,28 @@ var db = {
 		}
 		// if (result === typeof Object)
 	},
-	
+
 	/**
      * @this {Object}
      */
 	set: function(key, obj) {
 		//console.log("db.set('"+key+"', "+JSON.stringify(obj)+")");
-		this.ls.setItem(key, JSON.stringify(obj));
+		if (key !== null) this.ls.setItem(key, JSON.stringify(obj));
 	},
-	
+
 	/**
      * @this {Object}
      */
 	remove: function(key) {
 		this.ls.removeItem(key);
 	},
-	
+
 	// clears ALL localStorage - only call if you're sure
 	/**
      * @this {Object}
      */
 	clear: function() {
-		this.ls.clear();	
+		this.ls.clear();
 	}
 };
 
@@ -195,7 +195,7 @@ keyDB.prototype.getAllObject = function(list_default) {
  */
 keyDB.prototype.setArray = function(key, list) {
 	if (!key) return;	// return if no key
-	
+
 	for (var i = 0, l = list.length; i < l; i++) {
 		//console.log(list[i]);
 		this.set(list[i][key], list[i]);
@@ -218,7 +218,7 @@ keyDB.prototype.setObject = function(list) {
 keyDB.prototype.setAllArray = function(key, list) {
 	if (!key) return;	// return if no key
 	this.clear();
-	
+
 	this.setArray(key, list);
 };
 
@@ -243,7 +243,7 @@ keyDB.prototype.clear = function() {
 
 
 /**
- *	
+ *
  */
 function objectIsEmpty(obj) {
     for (var i in obj) return false;
