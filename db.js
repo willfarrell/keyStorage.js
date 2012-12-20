@@ -167,7 +167,7 @@ keyDB.prototype.getAllArray = function(key, list_default) {
 	}
 	if (!list.length && key && list_default) {
 		if (typeof(list_default) == 'function') list_default = list_default();
-		this.setAllsArray(key, list_default);
+		this.getAllArray(key, list_default);
 		list = list_default;
 	}
 	return list;
