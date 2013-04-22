@@ -3,7 +3,7 @@
 ***
 
 ## Examples
-Simple localstorage
+Simple localStorage
 ```js
 db.get('key');
 db.set('key', {});
@@ -15,7 +15,7 @@ Creating a keyDB
 ```js
 db.keyDB_name = keyDB(
 	"name",// DB prefix for all keys
-	{						// default object (optinal)
+	{						// default object (optional)
 		"key":"",
 		"value":"",
 		"timestamp":Date.now()
@@ -27,7 +27,7 @@ db.keyDB_name = keyDB(
 ```js
 db.keyDB_name.get('key');
 db.keyDB_name.getAllArray('key', []);
-db.keyDB_name.getAllArray('key', function() {reutrn [];});
+db.keyDB_name.getAllArray('key', function() {return [];});
 db.keyDB_name.set('key', {});
 db.keyDB_name.remove('key');
 db.keyDB_name.clear();
@@ -47,8 +47,8 @@ if (storage) {
 ```
 
 ## Important Notes
--JSON.parse() and JSON.stringify() are built-in
--"keys" is a reserved key name for keyDB objects
+- JSON.parse() and JSON.stringify() are built-in for when objects or arrays are passed in.
+- "keys" is a reserved key name for keyDB objects.
 
 ## To Do
--add update fucntions
+- add update functions
