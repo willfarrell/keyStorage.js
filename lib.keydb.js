@@ -1,69 +1,25 @@
 /*
-//== To Do ==//
--add update fucntions
--merge [g|s]etAllArray and [g|s]etAllObject into one
-
-//== Important Notes ==//
--JSON.parse() and JSON.stringify() are built-in
--"keys" is a reserved key name for keyDB objects
-
-//== Examples ==//
-
-//= General Examples =//
-db.get('key');
-db.set('key', {});
-db.remove('key');
-db.clear();
-
-db.keyDB_name.get('key');
-db.keyDB_name.getAllArray('key', []);
-db.keyDB_name.getAllArray('key', function() {reutrn [];});
-db.keyDB_name.set('key', {});
-db.keyDB_name.remove('key');
-db.keyDB_name.clear();
-
-var list = db.keyDB_name.keys; 	// get list of keys
-var obj = db.keyDB_name.obj;	// get default obj
-
-//= init Examples =//
-var test = {}
-if (storage) {
-	test = db.get('test', test);
-} else {
-	alert('Your browser seems to be in Private Mode. Please disable it if you\'d like your settings saved for your next visit.');
-}
-
-//= Creating a keyDB =//
-db.name = keyDB(
-	"name", 				// DB prefix for all keys
-	{						// default object (optinal)
-		"key":"",
-		"value":"",
-		"timestamp":Date.now()
-	}
-);
-
-
-*/
+ * will Farrell
+ */
 
 // localStorage db wrapper
 var db = {
 	on: false,			// bool - if localStorage is enabled in browser
-	ls: localStorage, 	// localStorage short name - obfusification
+	ls: localStorage,	// localStorage short name - obfusification
 
 	/**
-	 * set 'on' bool for those that want to
-	 * test if localStorage is enabled
-	 *
-	 * call from below
-	 *
-     * @this {Object}
-     */
+	* set 'on' bool for those that want to
+	* test if localStorage is enabled
+	*
+	* call from below
+	*
+	* @this {Object}
+	*/
 	init: function() {
 		var uid = +new Date(),
 			result;
 		try {
-			result = this.get(uid, uid) == uid;
+			result = this.get(uid, uid) === uid;
 			this.remove(uid);
 			this.on = result;
 		} catch( e ) {}
@@ -72,8 +28,8 @@ var db = {
 	// Main Functions //
 
 	/**
-     * @this {Object}
-     */
+	* @this {Object}
+	*/
 	get: function(key, default_obj) {
 		//console.log("db.get('"+key+"', "+JSON.stringify(default_obj)+")");
 		if ( default_obj !== 'undefined' && !this.ls.getItem(key)) {
@@ -82,33 +38,38 @@ var db = {
 		//console.log(this.ls.getItem(key));
 		var result = this.ls.getItem(key);
 
-		if ( result === 'undefined' ) {
+		/*if ( result === 'undefined' ) {
 			return result;
-		} else {
+		}*/
+		if (result.match(/^[{\["]/)) {
 			return JSON.parse(result);
 		}
+		return result;
+
 		// if (result === typeof Object)
 	},
 
 	/**
-     * @this {Object}
-     */
+	* @this {Object}
+	*/
 	set: function(key, obj) {
 		//console.log("db.set('"+key+"', "+JSON.stringify(obj)+")");
-		if (key !== null) this.ls.setItem(key, JSON.stringify(obj));
+		if (key !== null) {
+			this.ls.setItem(key, typeof(obj) === 'object' ? JSON.stringify(obj) : obj);
+		}
 	},
 
 	/**
-     * @this {Object}
-     */
+	* @this {Object}
+	*/
 	remove: function(key) {
 		this.ls.removeItem(key);
 	},
 
 	// clears ALL localStorage - only call if you're sure
 	/**
-     * @this {Object}
-     */
+	* @this {Object}
+	*/
 	clear: function() {
 		this.ls.clear();
 	}
@@ -123,7 +84,7 @@ db.init();
  * @this {Object}
  */
 function keyDB(id, default_obj) {
-	this.id = id ? id+"_" : "_"; // prefix for all keys, end with _
+	this.id = id ? id+'_' : '_'; // prefix for all keys, end with _
 	this.keys = db.get(this.id+'keys', []);
 	this.obj = default_obj || {}; // default object being stored
 }
@@ -131,13 +92,16 @@ function keyDB(id, default_obj) {
 
 keyDB.prototype.get = function(key, default_obj) {
 	//console.log("keyDB.get("+key+")");
-	if (typeof(list_default) == 'function') default_obj = default_obj();
-	return db.get(this.id+key, default_obj);
+	var obj = {};
+	if (typeof(default_obj) === 'function') { obj = default_obj(); }
+	else { obj = default_obj; }
+
+	return db.get(this.id+key, obj);
 };
 
 keyDB.prototype.set = function(key, obj) {
-	if (obj == 'undefined' || key == 'undefined') return;	// don't set undefined
-	//console.log("keyDB.set("+key+", "); console.log(obj); console.log(")");
+	if (obj === 'undefined' || key === 'undefined') { return; }	// don't set undefined
+	//console.log("keyDB.set("+key+", ");
 	db.set(this.id+key, obj);
 	// save key in keychain if not already there
 	var index = this.keys.indexOf(key);
@@ -161,14 +125,16 @@ keyDB.prototype.remove = function(key) {
  * list = [] - default container
  */
 keyDB.prototype.getAllArray = function(key, list_default) {
-	var list = [];
+	var obj = [], list = [];
+	if (typeof(list_default) === 'function') { obj = list_default(); }
+	else { obj = list_default; }
+
 	for (var i = 0, l = this.keys.length; i < l; i++) {
 		list.push(this.get(this.keys[i]));
 	}
-	if (!list.length && key && list_default) {
-		if (typeof(list_default) == 'function') list_default = list_default();
-		this.getAllArray(key, list_default);
-		list = list_default;
+	if (!list.length && key && obj) {
+		this.setAllArray(key, obj);
+		list = obj;
 	}
 	return list;
 };
@@ -177,14 +143,16 @@ keyDB.prototype.getAllArray = function(key, list_default) {
  * list = {} - default container
  */
 keyDB.prototype.getAllObject = function(list_default) {
-	var list = {};
+	var obj = {}, list = {};
+	if (typeof(list_default) === 'function') { obj = list_default(); }
+	else { obj = list_default; }
+
 	for (var i = 0, l = this.keys.length; i < l; i++) {
 		list[this.keys[i]] = this.get(this.keys[i]);
 	}
-	if (objectIsEmpty(list) && list_default) {
-		if (typeof(list_default) == 'function') list_default = list_default();
-		this.setAllObject(list_default);
-		list = list_default;
+	if (!list.length && obj) {
+		this.setAllObject(obj);
+		list = obj;
 	}
 	return list;
 };
@@ -194,7 +162,7 @@ keyDB.prototype.getAllObject = function(list_default) {
  * list = [] - default container
  */
 keyDB.prototype.setArray = function(key, list) {
-	if (!key) return;	// return if no key
+	if (!key) { return; }	// return if no key
 
 	for (var i = 0, l = list.length; i < l; i++) {
 		//console.log(list[i]);
@@ -207,16 +175,32 @@ keyDB.prototype.setArray = function(key, list) {
  */
 keyDB.prototype.setObject = function(list) {
 	for (var i in list) {
-		this.set(i, list[i]);
+		if (list.hasOwnProperty(i)) {
+			this.set(i, list[i]);
+		}
 	}
 };
+
+
+/**
+ * list = [] or {} - default container
+ * key = string key name if list is array
+ */
+/*keyDB.prototype.setAll= function(list, key) {
+	this.clear();
+	if (typeof(list) === 'object') {
+		this.setObject(list);
+	} else if (key && typeof(list) === 'array') {
+		this.setArray(key, list);
+	}
+};*/
 
 /**
  * key = string key name
  * list = [] - default container
  */
 keyDB.prototype.setAllArray = function(key, list) {
-	if (!key) return;	// return if no key
+	if (!key) { return; }	// return if no key
 	this.clear();
 
 	this.setArray(key, list);
@@ -236,16 +220,7 @@ keyDB.prototype.setAllObject = function(list) {
 keyDB.prototype.clear = function() {
 	//this.ls.clear();
 	for (var i = 0, l = this.keys.length; i < l; i++) {
-		this.remove(this.id+this.keys[i]);
+		db.remove(this.id+this.keys[i]);
 	}
-	//db.remove(this.id+'keys');
+	db.remove(this.id+'keys');
 };
-
-
-/**
- *
- */
-function objectIsEmpty(obj) {
-    for (var i in obj) return false;
-	return true;
-}
