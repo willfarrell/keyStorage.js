@@ -43,8 +43,13 @@ var db = {
 		}*/
 		if (result.match(/^[{\["]/)) {
 			return JSON.parse(result);
-		}
-		return result;
+		} else if (result === 'true') {
+			return true;
+		} else if (result === 'false') {
+			return false;
+		} 
+		result = '"'+result+'"'; // to catch numbers
+		return JSON.parse(result);
 
 		// if (result === typeof Object)
 	},
@@ -57,6 +62,7 @@ var db = {
 		if (key !== null) {
 			this.ls.setItem(key, typeof(obj) === 'object' ? JSON.stringify(obj) : obj);
 		}
+		return obj;
 	},
 
 	/**
