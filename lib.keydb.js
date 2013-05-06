@@ -41,7 +41,7 @@ var db = {
 		/*if ( result === 'undefined' ) {
 			return result;
 		}*/
-		if (result.match(/^[{\["]/)) {
+		if (result && result.match(/^[{\["]/)) {
 			return JSON.parse(result);
 		} else if (result === 'true') {
 			return true;
@@ -58,9 +58,9 @@ var db = {
 	* @this {Object}
 	*/
 	set: function(key, obj) {
-		//console.log("db.set('"+key+"', "+JSON.stringify(obj)+")");
+		//console.log('db.set(', key, obj, ")");
 		if (key !== null) {
-			this.ls.setItem(key, typeof(obj) === 'object' ? JSON.stringify(obj) : obj);
+			this.ls.setItem(key, (typeof(obj) === 'object') ? JSON.stringify(obj) : obj);
 		}
 		return obj;
 	},
