@@ -1,0 +1,11 @@
+{
+	"name":"localStorage.keyDB",
+	"version":"0.3.1",
+	"main": "lib.keydb.js",
+	"ignore": [
+		".jshintrc",
+		"**/*.txt"
+	],
+	"dependencies":{},
+	"devDependencies": {}
+}
