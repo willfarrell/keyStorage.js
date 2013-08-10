@@ -82,8 +82,6 @@ var db = {
 	}
 };
 
-db.init();
-
 // Keyed DB Class
 // keyDB("id", {})
 // "keys" is a reserved keyname
