@@ -16,7 +16,7 @@ var db = {
 	* @this {Object}
 	*/
 	init: function(session) {
-		if (session) this.ls = sessionStorage;
+		if (session) { this.ls = sessionStorage; }
 		var uid = +new Date(),
 			result;
 		try {
