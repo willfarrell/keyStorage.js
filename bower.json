@@ -1,7 +1,7 @@
 {
 	"name":"keyStorage.js",
 	"version":"0.4.0",
-	"main": ["keyStorage.min.js", "angularjs.keyStorage.min.js"]
+	"main": ["keyStorage.min.js", "angularjs.keyStorage.min.js"],
 	"ignore": [
 		".jshintrc",
 		".vhosts",
