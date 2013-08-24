@@ -2,7 +2,7 @@ require('smoosh').config({
     "JAVASCRIPT": {
       "DIST_DIR": "./"
     , "keyStorage": ['./keyStorage.js']
-    , "angularjs.keyStorage": ['./angularjs.keyStorage.js']
+    , "angular.keyStorage": ['./angular.keyStorage.js']
   }
   , "JSHINT_OPTS": {
       "boss": true
