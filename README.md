@@ -1,7 +1,5 @@
 # localStorage.keyDB.js
 
-***
-
 ## Examples
 Simple localStorage
 ```js
