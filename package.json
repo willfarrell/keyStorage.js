@@ -1,0 +1,18 @@
+{
+  "name": "keystoragejs",
+  "description": "Key-value Storage for JavaScript",
+  "keywords": ["localStorage", "sessionStorage"],
+  "version": "0.4.0",
+  "homepage": "https://github.com/willfarrell/keyStorage.js",
+  "author": "will Farrell <iam@willfarrell.ca> (https://willfarrell.ca)",
+  "main": "./keyStorage.min.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/willfarrell/keyStorage.js.git"
+  },
+  "devDependencies": {
+    "smoosh": "*",
+    "domready": "*",
+    "sink-test": "*"
+  }
+}

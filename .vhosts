@@ -1,0 +1,4 @@
+<VirtualHost *>
+    ServerName keystorage
+    DocumentRoot __DIR__/
+</VirtualHost>

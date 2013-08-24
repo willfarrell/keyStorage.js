@@ -1,10 +1,13 @@
 {
-	"name":"localStorage.keyDB",
-	"version":"0.3.1",
-	"main": "lib.keydb.js",
+	"name":"keyStorage.js",
+	"version":"0.4.0",
+	"main": ["keyStorage.min.js", "angularjs.keyStorage.min.js"]
 	"ignore": [
 		".jshintrc",
-		"**/*.txt"
+		".vhosts",
+		"**/*.txt",
+		"Makefile*",
+		"tests*"
 	],
 	"dependencies":{},
 	"devDependencies": {}
