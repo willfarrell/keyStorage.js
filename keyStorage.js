@@ -82,7 +82,12 @@ function Storage(type) {
     //console.log('set(', key, obj, ')');
     if (obj == null) { obj = ''; }
     if (key !== null) {
-      this.storage.setItem(key, (typeof(obj) === 'object') ? JSON.stringify(obj) : obj);
+      try {
+        this.storage.setItem(key, (typeof(obj) === 'object') ? JSON.stringify(obj) : obj);
+      } catch(e) {
+        console.warn('Error: Failed to execute \'setItem\' on \'Storage\': Setting the value of\''+key+'\'');
+      }
+      
     }
     return obj;
   };
@@ -111,14 +116,14 @@ function Storage(type) {
 /**
  * @this {Object}
  */
-function keyStoarage(id, default_obj) {
+function keyStorage(id, default_obj) {
   this.id = id ? id+'_' : '_'; // prefix for all keys, end with _
   this.keys = db.get(this.id+'keys', []);
   this.obj = default_obj || {}; // default object being stored
 }
 
 
-keyStoarage.prototype.get = function(key, default_obj) {
+keyStorage.prototype.get = function(key, default_obj) {
   //console.log("keyDB.get("+key+")");
   var obj = {};
   if (typeof(default_obj) === 'function') { obj = default_obj(); }
@@ -127,7 +132,7 @@ keyStoarage.prototype.get = function(key, default_obj) {
   return db.get(this.id+key, obj);
 };
 
-keyStoarage.prototype.set = function(key, obj) {
+keyStorage.prototype.set = function(key, obj) {
   if (obj === 'undefined' || key === 'undefined') { return; }  // don't set undefined
   //console.log("keyDB.set("+key+", ");
   db.set(this.id+key, obj);
@@ -139,7 +144,7 @@ keyStoarage.prototype.set = function(key, obj) {
   }
 };
 
-keyStoarage.prototype.remove = function(key) {
+keyStorage.prototype.remove = function(key) {
   db.remove(this.id+key);
   // remove key in keychain
   var index = this.keys.indexOf(key);
@@ -152,7 +157,7 @@ keyStoarage.prototype.remove = function(key) {
 /**
  * list = [] - default container
  */
-keyStoarage.prototype.getAllArray = function(key, list_default) {
+keyStorage.prototype.getAllArray = function(key, list_default) {
   var obj = [], list = [];
   if (typeof(list_default) === 'function') { obj = list_default(); }
   else { obj = list_default; }
@@ -170,7 +175,7 @@ keyStoarage.prototype.getAllArray = function(key, list_default) {
 /**
  * list = {} - default container
  */
-keyStoarage.prototype.getAllObject = function(list_default) {
+keyStorage.prototype.getAllObject = function(list_default) {
   var obj = {}, list = {};
   if (typeof(list_default) === 'function') { obj = list_default(); }
   else { obj = list_default; }
@@ -189,7 +194,7 @@ keyStoarage.prototype.getAllObject = function(list_default) {
  * key = string key name
  * list = [] - default container
  */
-keyStoarage.prototype.setArray = function(key, list) {
+keyStorage.prototype.setArray = function(key, list) {
   if (!key) { return; }  // return if no key
 
   for (var i = 0, l = list.length; i < l; i++) {
@@ -201,7 +206,7 @@ keyStoarage.prototype.setArray = function(key, list) {
 /**
  * list = key:{key:key, ...} - default container
  */
-keyStoarage.prototype.setObject = function(list) {
+keyStorage.prototype.setObject = function(list) {
   for (var i in list) {
     if (list.hasOwnProperty(i)) {
       this.set(i, list[i]);
@@ -214,7 +219,7 @@ keyStoarage.prototype.setObject = function(list) {
  * list = [] or {} - default container
  * key = string key name if list is array
  */
-/*keyStoarage.prototype.setAll= function(list, key) {
+/*keyStorage.prototype.setAll= function(list, key) {
   this.clear();
   if (typeof(list) === 'object') {
     this.setObject(list);
@@ -227,7 +232,7 @@ keyStoarage.prototype.setObject = function(list) {
  * key = string key name
  * list = [] - default container
  */
-keyStoarage.prototype.setAllArray = function(key, list) {
+keyStorage.prototype.setAllArray = function(key, list) {
   if (!key) { return; }  // return if no key
   this.clear();
 
@@ -237,7 +242,7 @@ keyStoarage.prototype.setAllArray = function(key, list) {
 /**
  * list = key:{key:key, ...} - default container
  */
-keyStoarage.prototype.setAllObject = function(list) {
+keyStorage.prototype.setAllObject = function(list) {
   this.clear();
   this.setObject(list);
 };
@@ -245,7 +250,7 @@ keyStoarage.prototype.setAllObject = function(list) {
 /**
  * remove all keys from ls
  */
-keyStoarage.prototype.clear = function() {
+keyStorage.prototype.clear = function() {
   //this.ls.clear();
   for (var i = 0, l = this.keys.length; i < l; i++) {
     db.remove(this.id+this.keys[i]);
